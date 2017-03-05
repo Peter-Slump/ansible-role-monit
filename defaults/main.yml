@@ -11,3 +11,80 @@ monit_mail_hostname: example.com
 monit_mail_encryption: TLSV1
 
 monit_notify_email: monit@example.com
+
+monit__hostname: monit.example.com
+
+monit_enble_webserver: True
+monit_http_port: 2812
+monit_accept_from: 0.0.0.0
+monit_allow_from: 0.0.0.0
+monit_username: admin
+monit_password: super-secret-password
+
+monit_default_configs:
+  - name: cron
+    content: |
+      check process cron with pidfile /var/run/crond.pid
+        group system
+        start program = "/etc/init.d/cron start"
+        stop  program = "/etc/init.d/cron stop"
+        depends on cron_rc
+
+      check file cron_rc with path /etc/init.d/cron
+        group system
+        if failed checksum then unmonitor
+        if failed permission 755 then unmonitor
+        if failed uid root then unmonitor
+        if failed gid root then unmonitor
+  - name: filesystem
+    content: |
+      # This file is maintained by Ansible all changes will be overwritten.
+
+      check filesystem rootfs with path /
+             if space usage > 90% then alert
+  - name: ssh
+    content: |
+      # This file is maintained by Ansible all changes will be overwritten.
+
+      check process sshd with pidfile /var/run/sshd.pid
+         start program  "/etc/init.d/ssh start"
+         stop program  "/etc/init.d/ssh stop"
+         if failed port {{ monit_ssh_port }} protocol ssh then restart
+         if 5 restarts within 5 cycles then timeout
+  - name: syslog
+    content: |
+      check process syslogd with pidfile /var/run/rsyslogd.pid
+        start program = "/etc/init.d/rsyslog start"
+        stop program = "/etc/init.d/rsyslog stop"
+
+      check file syslogd_file with path /var/log/syslog
+        if timestamp > 65 minutes then alert # Have you seen "-- MARK --"?
+  - name: system
+    content: |
+      check system {{ ansible_hostname }}
+          if loadavg (5min) > {{ ansible_processor_cores }} then alert
+          if loadavg (15min) > 1 then alert
+          if memory usage > 80% for 4 cycles then alert
+          if swap usage > 20% for 4 cycles then alert
+          # Test the user part of CPU usage
+          if cpu usage (user) > 80% for 2 cycles then alert
+          # Test the system part of CPU usage
+          if cpu usage (system) > 20% for 2 cycles then alert
+          # Test the i/o wait part of CPU usage
+          if cpu usage (wait) > 80% for 2 cycles then alert
+          # Test CPU usage including user, system and wait. Note that
+          # multi-core systems can generate 100% per core
+          # so total CPU usage can be more than 100%
+          if cpu usage > {{ ansible_processor_cores * 100 }}% for 4 cycles then alert
+
+monit_configs: []
+
+# monit_configs example:
+# monit_configs:
+#   - name: my-app
+#     content: |
+#       check process sshd with pidfile /var/run/sshd.pid
+#          start program  "/etc/init.d/ssh start"
+#          stop program  "/etc/init.d/ssh stop"
+#          if failed port {{ monit_ssh_port }} protocol ssh then restart
+#          if 5 restarts within 5 cycles then timeout

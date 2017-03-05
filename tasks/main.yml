@@ -1,51 +1,14 @@
 ---
 
-- name: Install required packages
-  apt:
-    name: monit
-    state: latest
-
-- name: Set notify email address
-  template:
-    src: etc/monit/conf.d/alert.j2
-    dest: /etc/monit/conf.d/alert
-  notify:
-    - Reload Monit
-
-- name: Configure monit mail
-  template:
-    src: etc/monit/conf.d/mailserver.j2
-    dest: /etc/monit/conf.d/mailsever
-  when: monit_mailserver_enabled
-  notify:
-    - Reload Monit
-
-- name: Configure monitorings
-  template:
-    src: "etc/monit/conf-available/{{ item }}.j2"
-    dest: "/etc/monit/conf-available/{{ item }}"
-    owner: root
-    group: root
-    mode: 0644
+- include: install.yml
+- include: mail.yml
+- include: configs.yml
   with_items:
-    - filesystem
-    - ssh
-    - system
-    - cron
-    - syslog
-  notify:
-    - Reload Monit
+    - "{{ monit_default_configs }}"
 
-- name: Enable configrations
-  file:
-    src: "/etc/monit/conf-available/{{ item }}"
-    dest: /etc/monit/conf-enabled/{{ item }}
-    state: link
+- include: configs.yml
   with_items:
-    - filesystem
-    - ssh
-    - system
-    - cron
-    - syslog
-  notify:
-    - Reload Monit
+    - "{{ monit_configs }}"
+
+- include: webserver.yml
+  when: monit_enble_webserver

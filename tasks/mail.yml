@@ -1,0 +1,22 @@
+---
+
+- name: mail | Set notify email address
+  template:
+    src: etc/monit/conf.d/alert.j2
+    dest: /etc/monit/conf.d/alert
+  notify:
+    - Reload Monit
+  tags:
+    - monit
+    - mail
+
+- name: mail | Configure monit mail
+  template:
+    src: etc/monit/conf.d/mailserver.j2
+    dest: /etc/monit/conf.d/mailsever
+  when: monit_mailserver_enabled
+  notify:
+    - Reload Monit
+  tags:
+    - monit
+    - mail

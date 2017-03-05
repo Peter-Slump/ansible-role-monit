@@ -1,0 +1,11 @@
+---
+
+- name: Configure Monit webservice
+  template:
+    src: etc/monit/conf.d/webserver.j2
+    dest: /etc/monit/conf.d/webserver.conf
+  notify:
+    - Reload Monit
+  tags:
+    - monit
+    - webserver

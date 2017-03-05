@@ -1,0 +1,9 @@
+---
+
+- name: install | Install required packages
+  apt:
+    name: monit
+    state: latest
+  tags:
+    - monit
+    - install
