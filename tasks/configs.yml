@@ -1,6 +1,6 @@
 ---
 
-- name: config | Configure monitoring "{{ item.name }}"
+- name: configs | Configure monitoring "{{ item.name }}"
   template:
     src: etc/monit/conf-available/conf.j2
     dest: "/etc/monit/conf-available/{{ item.name }}"
@@ -10,7 +10,7 @@
     - monit
     - configs
 
-- name: config | Enable monitoring "{{ item.name }}"
+- name: configs | Enable monitoring "{{ item.name }}"
   file:
     src: "/etc/monit/conf-available/{{ item.name }}"
     dest: "/etc/monit/conf-enabled/{{ item.name }}"

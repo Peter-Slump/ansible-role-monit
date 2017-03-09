@@ -1,6 +1,6 @@
 ---
 
-- name: Configure Monit webservice
+- name: webserver | Configure Monit webservice
   template:
     src: etc/monit/conf.d/webserver.j2
     dest: /etc/monit/conf.d/webserver.conf
