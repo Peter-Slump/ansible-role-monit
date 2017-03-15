@@ -3,4 +3,6 @@ SET MAILSERVER
   PORT {{ monit_mail_port }}
   USERNAME {{ monit_mail_username }} PASSWORD {{ monit_mail_password }}
   using {{ monit_mail_encryption }}
-  using HOSTNAME {{ monit_mail_hostname }}
+
+
+set mail-format { from: {{ monit_from_mail }} }

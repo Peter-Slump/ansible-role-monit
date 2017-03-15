@@ -2,17 +2,17 @@
 
 monit_ssh_port: 22
 
+monit_from_mail: "monit@example.com"
+
 monit_mailserver_enabled: False
 monit_mailserver: smtp.example.com
 monit_mail_port: 587
-monit_mail_username: monit@example.com
+monit_mail_username: "{{ monit_from_mail }}"
 monit_mail_password: some-secret-password
 monit_mail_hostname: example.com
 monit_mail_encryption: TLSV1
 
 monit_notify_email: monit@example.com
-
-monit__hostname: monit.example.com
 
 monit_enble_webserver: True
 monit_http_port: 2812
